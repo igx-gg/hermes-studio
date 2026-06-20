@@ -14,6 +14,7 @@ dist-ssr
 coverage
 __pycache__/
 *.py[cod]
+ops/**/reports/
 server/dist
 packages/server/dist
 *.local

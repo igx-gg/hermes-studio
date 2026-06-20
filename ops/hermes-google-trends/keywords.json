@@ -1,0 +1,20 @@
+{
+  "keywords": [
+    "AI agent",
+    "browser automation",
+    "CloakBrowser",
+    "Google Trends",
+    "Hermes Agent"
+  ],
+  "geo": "US",
+  "timeframe": "now 7-d",
+  "hl": "en-US",
+  "tz": 0,
+  "use_cloak": false,
+  "cloak_fallback": true,
+  "data_dir": "/home/agent/.hermes/trends",
+  "alert": {
+    "latest_min": 70,
+    "pct_increase_min": 25
+  }
+}
