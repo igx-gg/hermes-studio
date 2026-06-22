@@ -20,6 +20,11 @@ services:
       - HERMES_WEB_UI_XAI_CALLBACK_BIND_HOST=0.0.0.0
       - PATH=/opt/hermes/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       - HERMES_ALLOW_ROOT_GATEWAY=1
+      - SEMRUSH_3UE_BASE_URL=${SEMRUSH_3UE_BASE_URL:-https://sem.3ue.co}
+      - SEMRUSH_3UE_GMITM_TOKEN=${SEMRUSH_3UE_GMITM_TOKEN:-}
+      - TEMPORAL_ADDRESS=${TEMPORAL_ADDRESS:-temporal-server:7233}
+      - TEMPORAL_NAMESPACE=${TEMPORAL_NAMESPACE:-default}
+      - TEMPORAL_TASK_QUEUE=${TEMPORAL_TASK_QUEUE:-hermes-default}
     restart: unless-stopped
     stdin_open: true
     tty: true

@@ -227,6 +227,37 @@ def parse_country_volumes(summary_lines: list[str]) -> list[dict[str, str]]:
     return countries
 
 
+SECTION_TITLES = {"关键词变化", "问题", "关键词策略", "SERP 分析", "广告创意"}
+TABLE_HEADERS = {"关键词", "搜索量", "KD (%)"}
+UNAVAILABLE_VALUES = {"不可用", "N/A", "n/a", "-"}
+
+
+def parse_keyword_section_stats(section_lines: list[str]) -> dict[str, str | None]:
+    """Parse the aggregate counts above a keyword ideas table.
+
+    Semrush omits these numbers for some sparse sections. In that case the
+    table header appears immediately after the section title, so blindly taking
+    section_lines[1] returns "关键词" instead of a real count.
+    """
+
+    total_keywords = None
+    total_volume = find_next(section_lines, "总搜索量:")
+    total_idx = index_of(section_lines, "总搜索量:")
+    if total_idx > 1:
+        candidate = section_lines[1]
+        if candidate not in TABLE_HEADERS and candidate not in SECTION_TITLES and not candidate.startswith("查看全部"):
+            total_keywords = candidate
+
+    if total_keywords is None:
+        for line in section_lines:
+            match = re.search(r"查看全部\s+([\d,.]+)\s+个关键词", line)
+            if match:
+                total_keywords = match.group(1)
+                break
+
+    return {"total_keywords": total_keywords, "total_volume": total_volume}
+
+
 def parse_keyword_rows(section_lines: list[str], *, limit: int = 20) -> list[dict[str, Any]]:
     header_idx = -1
     for idx in range(len(section_lines) - 2):
@@ -240,16 +271,20 @@ def parse_keyword_rows(section_lines: list[str], *, limit: int = 20) -> list[dic
     idx = header_idx
     while idx + 2 < len(section_lines) and len(rows) < limit:
         keyword, volume, kd = section_lines[idx : idx + 3]
-        if keyword.startswith("查看全部") or keyword in {"问题", "关键词策略", "SERP 分析"}:
+        if keyword.startswith("查看全部") or keyword in SECTION_TITLES:
             break
-        if not re.fullmatch(r"\d+", kd):
+        if kd.startswith("查看全部") or kd in SECTION_TITLES:
+            break
+        kd_value = int(kd) if re.fullmatch(r"\d+", kd) else None
+        if kd_value is None and kd not in UNAVAILABLE_VALUES:
             break
         rows.append(
             {
                 "keyword": keyword,
                 "volume": volume,
                 "volume_number": parse_count_display(volume),
-                "keyword_difficulty": int(kd),
+                "keyword_difficulty": kd_value,
+                "keyword_difficulty_display": kd,
             }
         )
         idx += 3
@@ -276,13 +311,11 @@ def parse_keyword_ideas(lines: list[str], *, list_limit: int = 10) -> dict[str, 
     question_lines = subsection(questions_idx, questions_end)
 
     changes = {
-        "total_keywords": changes_lines[1] if len(changes_lines) > 1 else None,
-        "total_volume": find_next(changes_lines, "总搜索量:"),
+        **parse_keyword_section_stats(changes_lines),
         "rows": parse_keyword_rows(changes_lines, limit=list_limit),
     }
     questions = {
-        "total_keywords": question_lines[1] if len(question_lines) > 1 else None,
-        "total_volume": find_next(question_lines, "总搜索量:"),
+        **parse_keyword_section_stats(question_lines),
         "rows": parse_keyword_rows(question_lines, limit=list_limit),
     }
 
@@ -485,8 +518,11 @@ def format_markdown(result: dict[str, Any], *, list_limit: int = 10) -> str:
         lines.append("| Keyword | Volume | KD |")
         lines.append("|---|---:|---:|")
         for row in rows[:list_limit]:
+            kd = row.get("keyword_difficulty_display")
+            if kd is None:
+                kd = row.get("keyword_difficulty")
             lines.append(
-                f"| {md_escape(row.get('keyword'))} | {md_escape(row.get('volume'))} | {md_escape(row.get('keyword_difficulty'))} |"
+                f"| {md_escape(row.get('keyword'))} | {md_escape(row.get('volume'))} | {md_escape(kd)} |"
             )
 
     questions = ideas.get("questions") or {}
@@ -501,8 +537,11 @@ def format_markdown(result: dict[str, Any], *, list_limit: int = 10) -> str:
         lines.append("| Keyword | Volume | KD |")
         lines.append("|---|---:|---:|")
         for row in q_rows[:list_limit]:
+            kd = row.get("keyword_difficulty_display")
+            if kd is None:
+                kd = row.get("keyword_difficulty")
             lines.append(
-                f"| {md_escape(row.get('keyword'))} | {md_escape(row.get('volume'))} | {md_escape(row.get('keyword_difficulty'))} |"
+                f"| {md_escape(row.get('keyword'))} | {md_escape(row.get('volume'))} | {md_escape(kd)} |"
             )
 
     clusters = ideas.get("clusters") or []
