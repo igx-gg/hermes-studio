@@ -1,0 +1,26 @@
+interface:
+  display_name: "Keyword Research: Semrush + Trends"
+  short_description: "Query Semrush and Google Trends together."
+  default_prompt: "Use $keyword-research-semrush-trends to research the keyword image for the US market."
+  keywords:
+    - keyword
+    - keywords
+    - semrush
+    - google trends
+    - seo keyword
+    - 关键词
+    - 查询关键词
+    - 关键词研究
+    - 关键词情况
+    - 搜索量
+    - 趋势
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "semrush-keyword"
+      description: "Semrush Keyword Overview through the 3UE server-side browser login state."
+    - type: "mcp"
+      value: "google-trends-cloak"
+      description: "Google Trends collection through the cloak monitor MCP server."
+policy:
+  allow_implicit_invocation: true
