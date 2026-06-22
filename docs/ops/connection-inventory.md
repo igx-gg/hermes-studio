@@ -11,7 +11,27 @@ environment.
 | Hermes Agent | `C:\Users\YI\Documents\Hermes\ops\hermes-agent\hermes-agent.env.local` | `docs/ops/hermes-agent-connection.md` |
 | Temporal | `C:\Users\YI\Documents\Hermes\ops\temporal\temporal.env.local` | `docs/ops/temporal-connection.md` |
 | GitHub deployment | none | `docs/ops/github-deployment.md` |
-| MCP/browser runtime | none | `docs/ops/mcp-runtime.md` |
+| MCP/browser runtime | server: `/home/agent/.hermes/.env` | `docs/ops/mcp-runtime.md` |
+
+## Confirmed MCP/Browser Runtime Values
+
+MCP/browser runtime recovery values are persisted locally only:
+
+```text
+C:\Users\YI\Documents\Hermes\ops\mcp-runtime\mcp-runtime.env.local
+```
+
+Required keys:
+
+```text
+SEMRUSH_3UE_USERNAME
+SEMRUSH_3UE_PASSWORD
+HERMES_VNC_PASSWORD
+```
+
+Do not commit these values. x11vnc uses the first 8 characters when generating
+its VNC password file, so keep the full source value only in the local ignored
+file or the server runtime secret store.
 
 ## Still Needs Confirmation Before Full Migration
 
@@ -21,8 +41,6 @@ the running server before a full server migration:
 - Temporal PostgreSQL database name, username, password, and volume mapping.
 - Hermes persistent volume mapping for `/home/agent/.hermes`.
 - Hermes Web UI persistent data mapping for `/home/agent/.hermes-web-ui`.
-- 3UE/Semrush credentials, if automatic login recovery is required.
-- VNC/noVNC credentials, if the server-side browser display needs direct access.
 - Any provider API keys configured only in Dokploy environment variables.
 
 ## Verification Order

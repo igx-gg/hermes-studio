@@ -49,14 +49,23 @@ SEMRUSH_CDP_URL=http://127.0.0.1:9222
 SEMRUSH_3UE_STATE_DIR=/home/agent/.hermes/semrush-keyword/browser-state
 ```
 
-The 3UE/Semrush login credentials are not committed here. If they are needed
-for automatic recovery, store them in Dokploy environment variables or a local
-ignored file only:
+The 3UE/Semrush and VNC recovery values are stored only in the local ignored
+runtime file:
 
 ```text
-SEMRUSH_3UE_USERNAME=
-SEMRUSH_3UE_PASSWORD=
+C:\Users\YI\Documents\Hermes\ops\mcp-runtime\mcp-runtime.env.local
 ```
+
+Required keys:
+
+```text
+SEMRUSH_3UE_USERNAME
+SEMRUSH_3UE_PASSWORD
+HERMES_VNC_PASSWORD
+```
+
+Note: x11vnc stores only the first 8 characters in the generated VNC password
+file. Do not commit the source value or generated VNC password hash.
 
 ## Migration Notes
 
