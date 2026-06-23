@@ -38,7 +38,9 @@ RUN npm run build && npm prune --omit=dev
 
 # MCP growth tools use CloakBrowser as the fallback browser runtime when public
 # endpoints challenge direct requests.
-RUN /opt/hermes/.venv/bin/python -m pip install --no-cache-dir cloakbrowser==0.4.2 \
+RUN /opt/hermes/.venv/bin/python -m ensurepip --upgrade \
+    && /opt/hermes/.venv/bin/python -m pip install --no-cache-dir --upgrade pip \
+    && /opt/hermes/.venv/bin/python -m pip install --no-cache-dir cloakbrowser==0.4.2 \
     && /opt/hermes/.venv/bin/python -c "import cloakbrowser"
 
 ENV NODE_ENV=production
