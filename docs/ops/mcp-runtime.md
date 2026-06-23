@@ -71,5 +71,7 @@ file. Do not commit the source value or generated VNC password hash.
 
 - Restore `/home/agent/.hermes` to preserve scripts, MCP config, skills,
   sessions, trends history, and browser state.
+- The Docker image installs `cloakbrowser==0.4.2` into `/opt/hermes/.venv` for
+  Google Trends, Meta Ads Library and Semrush fallback browser access.
 - Verify `cloakbrowser` and `playwright` are installed in `/opt/hermes/.venv`.
 - Verify each MCP server can list tools after migration.
